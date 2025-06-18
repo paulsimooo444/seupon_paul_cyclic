@@ -1,1 +1,205 @@
-#cyclic_dfs_code_in_C++
+//cyclic_dfs_code_in_C++
+
+#include <iostream>
+using namespace std;
+
+
+int graph[100][100];  // adjacency matrix
+bool visited[100];    // to track visited nodes
+bool inStack[100];    // to track nodes in current path
+int numVertices;      // number of vertices
+int cycleStart = -1;  // where cycle starts
+int cycleEnd = -1;    // where cycle ends
+
+// DFS function to detect cycle
+bool dfs(int node) {
+    visited[node] = true;    // mark current node as visited
+    inStack[node] = true;    // add to current path
+    
+    // check all neighbors of current node
+    for (int i = 0; i < numVertices; i++) {
+        if (graph[node][i] == 1) {  // if there's an edge
+            if (!visited[i]) {      // if neighbor not visited
+                if (dfs(i)) {       // recursively visit neighbor
+                    return true;    // cycle found
+                }
+            }
+            else if (inStack[i]) {  // if neighbor is in current path
+                cycleStart = i;     // found cycle!
+                cycleEnd = node;
+                return true;
+            }
+        }
+    }
+    
+    inStack[node] = false;  // remove from current path
+    return false;           // no cycle found from this node
+}
+
+// function to check if graph has cycle
+bool hasCycle() {
+    // initialize all arrays to false
+    for (int i = 0; i < numVertices; i++) {
+        visited[i] = false;
+        inStack[i] = false;
+    }
+    
+    // check each unvisited node
+    for (int i = 0; i < numVertices; i++) {
+        if (!visited[i]) {
+            if (dfs(i)) {
+                return true;  // cycle found
+            }
+        }
+    }
+    return false;  // no cycle found
+}
+
+// function to print the cycle
+void printCycle() {
+    if (cycleStart == -1) {
+        cout << "No cycle found!" << endl;
+        return;
+    }
+    
+    cout << "Cycle found: ";
+    cout << cycleStart;
+    
+    // find path from cycleEnd back to cycleStart
+    int current = cycleEnd;
+    while (current != cycleStart) {
+        cout << " <- " << current;
+        // find previous node in cycle (simple approach)
+        for (int i = 0; i < numVertices; i++) {
+            if (graph[i][current] == 1 && visited[i]) {
+                current = i;
+                break;
+            }
+        }
+    }
+    cout << " <- " << cycleStart << endl;
+}
+
+// function to print adjacency matrix
+void printMatrix() {
+    cout << "\nAdjacency Matrix:" << endl;
+    cout << "  ";
+    for (int i = 0; i < numVertices; i++) {
+        cout << i << " ";
+    }
+    cout << endl;
+    
+    for (int i = 0; i < numVertices; i++) {
+        cout << i << " ";
+        for (int j = 0; j < numVertices; j++) {
+            cout << graph[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+int main() {
+    cout << "Cycle Detection using DFS" << endl << endl;
+    
+    // example 1: Simple cycle
+    cout << "Example 1: Graph with a Simple Cycle:" << endl;
+    numVertices = 3;
+    
+    // create a simple cycle: 0 -> 1 -> 2 -> 0
+    // initialize matrix to all zeros
+    for (int i = 0; i < numVertices; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            graph[i][j] = 0;
+        }
+    }
+    
+    // add edges to create cycle
+    graph[0][1] = 1;  // edge from 0 to 1
+    graph[1][2] = 1;  // edge from 1 to 2
+    graph[2][0] = 1;  // edge from 2 to 0 (creates cycle)
+    
+    printMatrix();
+    
+    if (hasCycle()) {
+        cout << "This graph has a cycle!" << endl;
+        printCycle();
+    } else {
+        cout << "This graph has no cycle." << endl;
+    }
+    
+    cout << "\n" << string(50, '-') << endl << endl;
+    
+    // example 2: No cycle
+    cout << "Example 2: Graph with No Cycle:" << endl;
+    numVertices = 3;
+    
+    // initialize matrix to all zeros
+    for (int i = 0; i < numVertices; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            graph[i][j] = 0;
+        }
+    }
+    
+    // add edges without cycle
+    graph[0][1] = 1;  // edge from 0 to 1
+    graph[1][2] = 1;  // edge from 1 to 2
+    // no edge back to 0, so no cycle
+    
+    printMatrix();
+    
+    cycleStart = -1;  // reset cycle detection
+    cycleEnd = -1;
+    
+    if (hasCycle()) {
+        cout << "This graph has a cycle!" << endl;
+        printCycle();
+    } else {
+        cout << "This graph has no cycle." << endl;
+    }
+    
+    cout << "\n" << string(50, '-') << endl << endl;
+    
+    // example 3: Let user input their own graph
+    cout << "Enter your own graph" << endl;
+    cout << "How many vertices do you want? (max 10): ";
+    cin >> numVertices;
+    
+    if (numVertices > 10) {
+        cout << "Too many vertices! Setting to 10." << endl;
+        numVertices = 10;
+    }
+    
+    // initialize matrix to all zeros
+    for (int i = 0; i < numVertices; i++) {
+        for (int j = 0; j < numVertices; j++) {
+            graph[i][j] = 0;
+        }
+    }
+    
+    cout << "Enter the adjacency matrix (0 or 1 only):" << endl;
+    cout << "Enter " << numVertices << " rows of " << numVertices << " numbers each:" << endl;
+    
+    for (int i = 0; i < numVertices; i++) {
+        cout << "Row " << i << ": ";
+        for (int j = 0; j < numVertices; j++) {
+            cin >> graph[i][j];
+        }
+    }
+    
+    printMatrix();
+    
+    cycleStart = -1;  // reset cycle detection
+    cycleEnd = -1;
+    
+    if (hasCycle()) {
+        cout << "Your graph has a cycle!" << endl;
+        cout << "Cycle detected between vertices." << endl;
+    } else {
+        cout << "Your graph has no cycle." << endl;
+    }
+    
+    cout << "\nBye!" << endl;
+    
+    return 0;
+}
