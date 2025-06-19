@@ -100,7 +100,7 @@ void printMatrix() {
 }
 
 int main() {
-    cout << "Cycle Detection using DFS" << endl << endl;
+    cout << "Cycle Detection using DFS" << endl;
     
     // example 1: Simple cycle
     cout << "Example 1: Graph with a Simple Cycle:" << endl;
