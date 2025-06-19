@@ -1,4 +1,4 @@
-//cyclic_dfs_code_in_C++
+//Cyclic_Code_DFS_in_C++
 
 #include <iostream>
 using namespace std;
@@ -189,7 +189,7 @@ int main() {
         cout << "This graph has no cycle." << endl;
     }
     
-    cout << "\nProgram completed successfully!" << endl;
+    cout << "\nProgram completed! Bye!" << endl;
     
     return 0;
 }
